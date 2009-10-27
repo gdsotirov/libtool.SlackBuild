@@ -11,7 +11,7 @@
 NAME=libtool
 VERSION=2.2.6a
 VEROTH=2.2.6
-BUILD=1
+BUILD=2
 ARCH=${ARCH:-i486}
 
 CWD=${CWD:-`pwd`}
@@ -56,6 +56,11 @@ make DESTDIR=$PKG install || exit 4
 
 bin_perms $PKG
 ( cd $PKG; strip_bin; strip_lib )
+# Provide the necessary symbolic links for programs compiled with
+# previous versions of libtool
+( cd $PKG/usr/lib
+  ln -s libltdl.so.7.2.0 libltdl.so.3.1
+  ln -s libltdl.so.7.2.0 libltdl.so.3)
 ( cd $SRC; create_docs $PKG $NAME-$VERSION )
 rm -rf $PKG/usr/doc/$NAME-$VERSION/doc
 rm -f $PKG/usr/info/dir
@@ -76,7 +81,7 @@ install -m 644 $CWD/$NAME.SlackBuild    $SBDIR/$NAME.SlackBuild
 
 PKGNAME=$NAME-$VERSION-$ARCH-$BUILD$MYIN
 cd $PKG
-makepkg -l y -c n $PKG_DIR/$PKGNAME.txz
+makepkg -p -l y -c n $PKG_DIR/$PKGNAME.txz
 cd $PKG_DIR
 md5sum $PKGNAME.txz > $PKGNAME.txz.md5
 cp $CWD/slack-desc $PKGNAME.txt
