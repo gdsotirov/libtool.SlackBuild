@@ -1,16 +1,27 @@
 # Update the /usr/info/dir info-database, so that we will see the new
-# "libtool" item in info root structure, if we type "info".
-if [ -x /usr/bin/install-info ] ; then
-  install-info --info-dir=/usr/info /usr/info/libtool.info.gz 2>/dev/null
-elif fgrep "libtoolize" usr/info/dir 1> /dev/null 2> /dev/null ; then
-  GOOD=yes # It seems to be entered in the /usr/info/dir already
-else # add the info to the dir file directly:
-cat << EOF >> usr/info/dir
-GNU programming tools
-* Libtool: (libtool).           Generic shared library support script.
-This is libtool.info, produced by makeinfo version 4.11 from /Users/gary/Devo/libtool/doc/libtool.texi.
+# "libtool" items in info root structure, if we type "info".
+ErrCount=0
 
-Individual utilities
-* libtoolize: (libtool)Invoking libtoolize.     Adding libtool support.
-EOF
+function echo_exit {
+  ((ErrCount += $1))
+  if [ $1 -eq 0 ]; then
+    echo -n "$2 "
+  else
+    echo -n $3
+  fi
+}
+
+if [ -x /usr/bin/install-info ] ; then
+  echo -n "Installing info pages... "
+  install-info --info-dir=/usr/info /usr/info/libtool.info.gz   2>/dev/null
+  echo_exit $? 0 
+  install-info --info-dir=/usr/info /usr/info/libtool.info-1.gz   2>/dev/null
+  echo_exit $? 1 
+  install-info --info-dir=/usr/info /usr/info/libtool.info-2.gz   2>/dev/null
+  echo_exit $? 2 
+  echo_exit $ErrCount "DONE" "FAILURE"
+  echo
+else
+  echo "WARNING: Info pages cannot be installed!"
 fi
+
