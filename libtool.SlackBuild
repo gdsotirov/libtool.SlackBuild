@@ -9,9 +9,8 @@
 . ../slack-package.conf
 
 NAME=libtool
-VERSION=2.2.6a
-VEROTH=2.2.6
-BUILD=2
+VERSION=2.2.10
+BUILD=${BUILD:-1}
 ARCH=${ARCH:-i486}
 
 CWD=${CWD:-`pwd`}
@@ -21,7 +20,7 @@ if [ ! -e $TMP ]; then
   mkdir -p $TMP # location to build the source
 fi
 
-SRC=$TMP/$NAME-$VEROTH
+SRC=$TMP/$NAME-$VERSION
 if [ -e $SRC -a -d $SRC ]; then
   echo "Source directory '$SRC' already exists! Plaese, move it or remove it."
   exit 1
@@ -36,7 +35,7 @@ mkdir -p $PKG
 
 # Extract the sources
 cd $TMP
-tar -zxvf $CWD/$NAME-$VERSION.tar.gz || exit 1
+tar -xvf $CWD/$NAME-$VERSION.tar.gz || exit 1
 cd $SRC
 fix_source
 
@@ -47,6 +46,7 @@ CXXFLAGS=$SLKCFLAGS \
             --host=$ARCH-slackware-linux \
             --prefix=/usr \
 	    --libdir=/usr/lib${LIBDIRSUFFIX} \
+            --mandir=/usr/man \
 	    --infodir=/usr/info \
             --enable-shared=yes \
             --enable-static=no || exit 2
@@ -64,6 +64,7 @@ bin_perms $PKG
 ( cd $SRC; create_docs $PKG $NAME-$VERSION )
 rm -rf $PKG/usr/doc/$NAME-$VERSION/doc
 rm -f $PKG/usr/info/dir
+gzip_man $PKG
 gzip_info $PKG
 
 # Copy service info
