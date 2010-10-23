@@ -9,7 +9,8 @@
 . ../slack-package.conf
 
 NAME=libtool
-VERSION=2.2.10
+VERSION=2.4
+LTDL_API_VER=7.3.0
 BUILD=${BUILD:-1}
 ARCH=${ARCH:-i486}
 
@@ -50,8 +51,9 @@ CXXFLAGS=$SLKCFLAGS \
 	    --infodir=/usr/info \
             --enable-shared=yes \
             --enable-static=no || exit 2
+#           --with-sysroot # in future
 
-make || exit 3
+make -j4 || exit 3
 make DESTDIR=$PKG install || exit 4
 
 bin_perms $PKG
@@ -59,8 +61,8 @@ bin_perms $PKG
 # Provide the necessary symbolic links for programs compiled with
 # previous versions of libtool
 ( cd $PKG/usr/lib
-  ln -s libltdl.so.7.2.0 libltdl.so.3.1
-  ln -s libltdl.so.7.2.0 libltdl.so.3)
+  ln -s libltdl.so.$LTDL_API_VER libltdl.so.3.1
+  ln -s libltdl.so.$LTDL_API_VER libltdl.so.3)
 ( cd $SRC; create_docs $PKG $NAME-$VERSION )
 rm -rf $PKG/usr/doc/$NAME-$VERSION/doc
 rm -f $PKG/usr/info/dir
@@ -72,13 +74,15 @@ install -m 755 -d $PKG/install
 install -m 644 $CWD/doinst.sh      $PKG/install/doinst.sh
 install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
 install -m 644 $CWD/slack-required $PKG/install/slack-required
+install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
 
 SBDIR=$PKG/usr/src/slackbuilds/$NAME-$VERSION
 install -m 755 -d $SBDIR
-install -m 644 $CWD/doinst.sh           $SBDIR/doinst.sh
-install -m 644 $CWD/slack-desc          $SBDIR/slack-desc
-install -m 644 $CWD/slack-required      $SBDIR/slack-required
-install -m 644 $CWD/$NAME.SlackBuild    $SBDIR/$NAME.SlackBuild
+install -m 644 $CWD/doinst.sh        $SBDIR/doinst.sh
+install -m 644 $CWD/slack-desc       $SBDIR/slack-desc
+install -m 644 $CWD/slack-required   $SBDIR/slack-required
+install -m 644 $CWD/slack-suggests   $SBDIR/slack-suggests
+install -m 644 $CWD/$NAME.SlackBuild $SBDIR/$NAME.SlackBuild
 
 PKGNAME=$NAME-$VERSION-$ARCH-$BUILD$MYIN
 cd $PKG
