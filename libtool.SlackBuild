@@ -20,10 +20,10 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: libtool.SlackBuild,v 1.5 2011/11/16 22:07:46 gsotirov Exp $
+# $Id: libtool.SlackBuild,v 1.6 2011/11/16 22:23:28 gsotirov Exp $
 #
 
-. ../slack-package.conf
+. ../../slack-package.conf
 
 NAME=libtool
 VERSION=2.4.2
@@ -77,7 +77,7 @@ bin_perms $PKG
 ( cd $PKG; strip_bin; strip_lib )
 # Provide the necessary symbolic links for programs compiled with
 # previous versions of libtool
-( cd $PKG/usr/lib
+( cd $PKG/usr/lib${LIBDIRSUFFIX} \
   ln -s libltdl.so.$LTDL_API_VER libltdl.so.3.1
   ln -s libltdl.so.$LTDL_API_VER libltdl.so.3)
 ( cd $SRC; create_docs $PKG $NAME-$VERSION )
