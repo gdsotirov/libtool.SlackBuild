@@ -1,2 +1,2 @@
-autoconf >= 2.62
+autoconf >= 2.68
 automake >= 1.11.1
