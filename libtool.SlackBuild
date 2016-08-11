@@ -6,7 +6,7 @@
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
 
-. ../slack-package.conf
+. ../../slack-package.conf
 
 NAME=libtool
 VERSION=2.2.6a
@@ -51,14 +51,14 @@ CXXFLAGS=$SLKCFLAGS \
             --enable-shared=yes \
             --enable-static=no || exit 2
 
-make || exit 3
+make -j || exit 3
 make DESTDIR=$PKG install || exit 4
 
 bin_perms $PKG
 ( cd $PKG; strip_bin; strip_lib )
 # Provide the necessary symbolic links for programs compiled with
 # previous versions of libtool
-( cd $PKG/usr/lib
+( cd $PKG/usr/lib${LIBDIRSUFFIX}
   ln -s libltdl.so.7.2.0 libltdl.so.3.1
   ln -s libltdl.so.7.2.0 libltdl.so.3)
 ( cd $SRC; create_docs $PKG $NAME-$VERSION )
